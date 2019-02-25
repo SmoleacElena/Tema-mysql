@@ -1,0 +1,84 @@
+package com.ElenaSmo.Tema4; 
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class Main {
+
+	public static void main(String[] args) {
+		DbConnection connect= new DbConnection();
+		try {
+			connect.selectExample("persons");
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+  
+		DbConnection insert= new DbConnection();
+		try {
+			insert.InsertExample("Ioana", "32", "persons");
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		DbConnection delete= new DbConnection();
+		try {
+			delete.deleteExample("persons", "elena");
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}	}	}
+  
+ public class DbConnection {
+	private Connection con;
+	private Statement st;
+	private ResultSet rs;
+	private PreparedStatement ps=null;
+	
+	public DbConnection() {
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			System.out.println("driver loaded");
+			con= DriverManager.getConnection("jdbc:mysql://localhost:3306/bazadate", "elena","elena");
+			System.out.println("connection established");
+		}  catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+
+	public void selectExample(String persons) throws Exception{
+		st=con.createStatement();
+		rs=st.executeQuery("select * from "+ persons);
+		while(rs.next()) {
+			String name=rs.getString("name");
+			String age=rs.getString("age");
+			System.out.println("nume: "+ name+ " Varsta: "+ age);
+		}
+		
+	}
+	public void InsertExample(String name, String age, String persons) throws SQLException{
+		try {
+		ps=con.prepareStatement("insert into "+persons+" values (?,?) ");
+		ps.setString(1, "Ioana");
+		ps.setString(2, "32");
+		ps.executeUpdate();
+		System.out.println("am inserat");
+		}  catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void deleteExample(String persons, String referinta) throws SQLException{
+		try {
+		ps=con.prepareStatement("delete from "+persons+" where name=? ; ");
+		ps.setString(1, referinta);
+		ps.executeUpdate();
+	} catch (Exception e) {
+		e.printStackTrace();
+	}	}}
